@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-
+// Entity: Students
 class Students {
     private int id;
     private String name;
@@ -37,25 +37,21 @@ class Students {
     }
 }
 
-
 public class V418027 {
-    private Vector<Student> students = new Vector<>();
+    private Vector<Students> students = new Vector<>();
     private Connection connection;
     private JFrame frame;
     private JTable table;
     private DefaultTableModel tableModel;
 
     public V418027() {
-        // Initialize database connection
-        String url = "jdbc:mysql://sql12.freesqldatabase.com:3306/sql12751538";
-        String user = "sql12751538";
-        String password = "Ty724j93py";
-        try {
-            connection = DriverManager.getConnection(url, user, password);
-            System.out.println("Connected to the database!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+      try {
+    Class.forName("com.mysql.cj.jdbc.Driver");
+    connection = DriverManager.getConnection("jdbc:mysql://sql12.freesqldatabase.com:3306/sql12753169","sql12753169","Bkt2TuVpwx");
+    System.out.println("Connected to the database!");
+} catch (ClassNotFoundException | SQLException e) {
+    e.printStackTrace();
+}
 
         // Initialize GUI
         frame = new JFrame("Student Management System");
@@ -65,7 +61,6 @@ public class V418027 {
         tableModel = new DefaultTableModel(new Object[]{"ID", "Name", "Age", "Course"}, 0);
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
-
 
         JButton addButton = new JButton("Add Student");
         addButton.addActionListener(new ActionListener() {
@@ -140,12 +135,12 @@ public class V418027 {
             String name = nameField.getText();
             int age = Integer.parseInt(ageField.getText());
             String course = courseField.getText();
-            addStudent(new Student(id, name, age, course));
+            addStudent(new Students(id, name, age, course));
         }
     }
 
     // Add a student
-    public void addStudent(Student student) {
+    public void addStudent(Students student) {
         String sql = "INSERT INTO students (id, name, age, course) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, student.getId());
@@ -181,7 +176,7 @@ public class V418027 {
     public void searchStudentById() {
         String id = JOptionPane.showInputDialog("Enter Student ID:");
         if (id != null) {
-            Student student = searchStudentById(Integer.parseInt(id));
+            Students student = searchStudentById(Integer.parseInt(id));
             if (student != null) {
                 JOptionPane.showMessageDialog(frame, student);
             } else {
@@ -190,7 +185,7 @@ public class V418027 {
         }
     }
 
-    public Student searchStudentById(int id) {
+    public Students searchStudentById(int id) {
         String sql = "SELECT * FROM students WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, id);
@@ -199,7 +194,7 @@ public class V418027 {
                 String name = rs.getString("name");
                 int age = rs.getInt("age");
                 String course = rs.getString("course");
-                return new Student(id, name, age, course);
+                return new Students(id, name, age, course);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -260,30 +255,29 @@ public class V418027 {
     }
 
     public void updateStudent(int id, String newName, int newAge, String newCourse) {
-        String sql = "UPDATE students SET name = ?, age = ?, course = ? WHERE id = ?";
+               String sql = "UPDATE students SET name = ?, age = ?, course = ? WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, newName);
             pstmt.setInt(2, newAge);
             pstmt.setString(3, newCourse);
             pstmt.setInt(4, id);
             int rowsAffected = pstmt.executeUpdate();
-        if (rowsAffected > 0) {
-            System.out.println("Student updated successfully.");
-        } else {
-            System.out.println("Student not found.");
+            if (rowsAffected > 0) {
+                System.out.println("Student updated successfully.");
+            } else {
+                System.out.println("Student not found.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
+    }
+
+    // Main method to run the application
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new V418027();
+            }
+        });
     }
 }
-
-// Main method to run the application
-public static void main(String[] args) {
-    SwingUtilities.invokeLater(new Runnable() {
-        public void run() {
-            new V418027();
-        }
-    });
-}
-}
-
